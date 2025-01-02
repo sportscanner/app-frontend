@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import { CalendarIcon } from 'lucide-react'
-import { format } from "date-fns"
+import { format, isBefore, startOfToday } from "date-fns"
 import { DateRange } from "react-day-picker"
 import { cn } from "@/lib/utils"
 import { Button } from "./button"
@@ -17,36 +17,42 @@ export function DateRangePicker({
   className,
   date,
   onDateChange,
-  onOpenChange,
 }: React.HTMLAttributes<HTMLDivElement> & {
   date: DateRange | undefined
   onDateChange: (date: DateRange | undefined) => void
-  onOpenChange?: (open: boolean) => void
 }) {
+  const [isOpen, setIsOpen] = React.useState(false)
   const [internalDate, setInternalDate] = React.useState<DateRange | undefined>(date)
 
-  // Remove useEffect to avoid infinite loops
-  const handleDateSelect = (newDate: DateRange | undefined) => {
-    if (
-      newDate?.from !== internalDate?.from ||
-      newDate?.to !== internalDate?.to
-    ) {
-      setInternalDate(newDate)
-      onDateChange(newDate)
+  const handleSelect = (selectedDate: DateRange | undefined) => {
+    // Always update internal state
+    setInternalDate(selectedDate)
+    
+    // Only update parent state and close when we have both dates
+    if (selectedDate?.from && selectedDate.to) {
+      onDateChange(selectedDate)
+      setIsOpen(false)
     }
   }
 
+  const disabledDays = {
+    before: startOfToday()
+  }
+
+  React.useEffect(() => {
+    setInternalDate(date)
+  }, [date])
+
   return (
     <div className={cn("grid gap-2", className)}>
-      <Popover onOpenChange={onOpenChange}>
+      <Popover open={isOpen} onOpenChange={setIsOpen}>
         <PopoverTrigger asChild>
           <Button
             id="date"
-            type="button"
             variant={"outline"}
             className={cn(
               "w-full justify-start text-left font-normal",
-              !internalDate && "text-muted-foreground"
+              !date && "text-muted-foreground"
             )}
           >
             <CalendarIcon className="mr-2 h-4 w-4" />
@@ -60,21 +66,26 @@ export function DateRangePicker({
                 format(internalDate.from, "LLL dd, y")
               )
             ) : (
-              <span>Pick a date</span>
+              <span>Pick a date range</span>
             )}
           </Button>
         </PopoverTrigger>
-        <PopoverContent className="w-auto p-0" align="start">
+        <PopoverContent className="w-auto p-4" align="start">
           <Calendar
             initialFocus
             mode="range"
-            defaultMonth={internalDate?.from}
+            defaultMonth={internalDate?.from || new Date()}
             selected={internalDate}
-            onSelect={handleDateSelect}
-            numberOfMonths={2}
+            onSelect={handleSelect}
+            numberOfMonths={1}
+            disabled={disabledDays}
+            className="rounded-md border"
           />
         </PopoverContent>
       </Popover>
     </div>
   )
 }
+
+export type { DateRange }
+
