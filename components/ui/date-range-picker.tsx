@@ -23,6 +23,19 @@ export function DateRangePicker({
   onDateChange: (date: DateRange | undefined) => void
   onOpenChange?: (open: boolean) => void
 }) {
+  const [internalDate, setInternalDate] = React.useState<DateRange | undefined>(date)
+
+  // Remove useEffect to avoid infinite loops
+  const handleDateSelect = (newDate: DateRange | undefined) => {
+    if (
+      newDate?.from !== internalDate?.from ||
+      newDate?.to !== internalDate?.to
+    ) {
+      setInternalDate(newDate)
+      onDateChange(newDate)
+    }
+  }
+
   return (
     <div className={cn("grid gap-2", className)}>
       <Popover onOpenChange={onOpenChange}>
@@ -33,18 +46,18 @@ export function DateRangePicker({
             variant={"outline"}
             className={cn(
               "w-full justify-start text-left font-normal",
-              !date && "text-muted-foreground"
+              !internalDate && "text-muted-foreground"
             )}
           >
             <CalendarIcon className="mr-2 h-4 w-4" />
-            {date?.from ? (
-              date.to ? (
+            {internalDate?.from ? (
+              internalDate.to ? (
                 <>
-                  {format(date.from, "LLL dd, y")} -{" "}
-                  {format(date.to, "LLL dd, y")}
+                  {format(internalDate.from, "LLL dd, y")} -{" "}
+                  {format(internalDate.to, "LLL dd, y")}
                 </>
               ) : (
-                format(date.from, "LLL dd, y")
+                format(internalDate.from, "LLL dd, y")
               )
             ) : (
               <span>Pick a date</span>
@@ -55,9 +68,9 @@ export function DateRangePicker({
           <Calendar
             initialFocus
             mode="range"
-            defaultMonth={date?.from}
-            selected={date}
-            onSelect={onDateChange}
+            defaultMonth={internalDate?.from}
+            selected={internalDate}
+            onSelect={handleDateSelect}
             numberOfMonths={2}
           />
         </PopoverContent>
@@ -65,6 +78,3 @@ export function DateRangePicker({
     </div>
   )
 }
-
-export type { DateRange }
-

@@ -163,14 +163,25 @@ export default function BadmintonBookingForm({ initialConfig, onClose, className
   }, [initialConfig, state]);
 
   useEffect(() => {
-    setState(prev => ({
-      ...prev,
-      consecutiveSlots,
-      dateRange: date,
-      selectedTimeSlots,
-      allLocations
-    }));
-  }, [setState, consecutiveSlots, date, selectedTimeSlots, allLocations]);
+    setState(prev => {
+      if (
+        prev.consecutiveSlots !== consecutiveSlots ||
+        prev.dateRange?.from !== date?.from ||
+        prev.dateRange?.to !== date?.to ||
+        prev.selectedTimeSlots !== selectedTimeSlots ||
+        prev.allLocations !== allLocations
+      ) {
+        return {
+          ...prev,
+          consecutiveSlots,
+          dateRange: date,
+          selectedTimeSlots,
+          allLocations
+        };
+      }
+      return prev;
+    });
+  }, [setState, consecutiveSlots, date, selectedTimeSlots, allLocations]);  
 
   return (
     <div className={cn("space-y-6", className)}>
