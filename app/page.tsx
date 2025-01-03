@@ -82,7 +82,7 @@ export default function LandingPage() {
   const [postcode, setPostcode] = useState('')
   const [isValid, setIsValid] = useState(false)
   const [showLoginModal, setShowLoginModal] = useState(false)
-  const { resetState } = useAppState()
+  const { state, setState, resetState } = useAppState()
 
   useEffect(() => {
     // Reset global state when landing page mounts

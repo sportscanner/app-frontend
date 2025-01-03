@@ -30,11 +30,11 @@ export function LoginModal({ isOpen, onClose, onContinueAsGuest }: LoginModalPro
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="w-[90%] sm:max-w-[400px]">
         <DialogHeader>
           <DialogTitle className="text-2xl text-center">Log in to Sportscanner</DialogTitle>
         </DialogHeader>
-        <form onSubmit={handleLogin} className="space-y-4">
+        <form onSubmit={handleLogin} className="space-y-4 px-2">
           <div className="space-y-2">
             <label htmlFor="email" className="text-sm font-medium">
               Email address
@@ -77,7 +77,7 @@ export function LoginModal({ isOpen, onClose, onContinueAsGuest }: LoginModalPro
           <Button type="submit" className="w-full h-12 text-lg bg-[#936de8] hover:bg-[#936de8]/90">
             LOG IN
           </Button>
-          <div className="space-y-4 text-center">
+          <div className="space-y-3 text-center">
             <div className="space-y-2">
               <p className="text-sm text-gray-600">
                 Not yet a member? Want to get personalised results based on your club membership discounts and location?
